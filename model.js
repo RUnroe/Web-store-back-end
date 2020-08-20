@@ -25,9 +25,9 @@ module.exports = mongoose.model('User', userSchema);
 
 
 let cartSchema = new mongoose.Schema({
-    userID: {
+    userKey: {
         type: String,
-        required: "Enter a userID"
+        required: "Enter a user key"
     },
     itemID: {
         type: String,
@@ -39,6 +39,10 @@ module.exports = mongoose.model('Cart', cartSchema);
 
 
 let itemSchema = new mongoose.Schema({
+    itemID: {
+        type: Number,
+        required: "Enter an item id"
+    },
     name: {
         type: String,
         required: "Enter an item name"
@@ -57,9 +61,9 @@ module.exports = mongoose.model('Item', itemSchema);
 
 
 let orderSchema = new mongoose.Schema({
-    userID: {
+    userKey: {
         type: String,
-        required: "Enter a userID"
+        required: "Enter a user key"
     },
     itemID: {
         type: String,
