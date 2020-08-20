@@ -27,6 +27,9 @@ app.use(bodyParser.json());
 //Defau;t
 app.get("/", routes.root);
 
+//Validate
+app.get("/validateKey", routes.key__validate);
+
 //Items
 app.get("/items", routes.item__getList);
 

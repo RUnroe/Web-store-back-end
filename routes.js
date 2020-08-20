@@ -20,6 +20,15 @@ exports.root = (req, res) => {
 }
 
 
+//Validate key
+exports.key__validate = (req, res) => {
+    User.find({key: req.query.key}, (err, result) => {
+        if(err) res.send(err);
+        if(res.length) res.json(true);
+        res.json(false);
+    })
+}
+
 //Item
 exports.item__getList = (req, res) => {
     Item.find({}, (err, result) => {
