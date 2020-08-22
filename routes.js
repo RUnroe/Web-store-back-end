@@ -91,7 +91,7 @@ exports.user__getKey = (req, res) => {
         }
         bcrypt.compare(req.body.password, user[0].password, (err, result) => {
             if(err) res.json(err);
-            if(result) res.json({"name": user[0].name, "key": user[0].key});
+            if(result) res.json({"name": user[0].name, "key": user[0].key, "email": user[0].email});
         });
     });
 }
