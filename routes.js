@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const bcrypt = require('bcrypt-nodejs');
 let User = mongoose.model("User");
 let Cart = mongoose.model("Cart");
 let Item = mongoose.model("Item");
@@ -14,6 +14,11 @@ exports.verifyKey = (req, res, next) => {
     });
 }
 
+hashString = (value, callback, req, res) => {
+    bcrypt.hash(value, null, null, (err, hash) => {
+        callback(hash, req, res);
+    });
+}
 
 exports.root = (req, res) => {
     res.send("Working");
@@ -24,8 +29,9 @@ exports.root = (req, res) => {
 exports.key__validate = (req, res) => {
     User.find({key: req.query.key}, (err, result) => {
         if(err) res.send(err);
-        if(res.length) res.json(true);
-        res.json(false);
+        console.log(result)
+        if(result.length) res.send(true);
+        else res.send(false);
     })
 }
 
@@ -41,12 +47,25 @@ exports.item__getList = (req, res) => {
 //User
 exports.user__create = (req, res) => {
     //name, email, password
-    let newUser = new User(req.body);
+    hashString(req.body.password, createUser, req, res);
+    
+}
+
+createUser = (hash, req, res) => {
+    let userData = {
+        name: req.body.name,
+        email: req.body.email,
+        password: hash
+    };
+    let newUser = new User(userData);
     newUser.save((err, result) => {
         if(err) res.send(err);
         res.json(result);
     });
 }
+
+
+
 
 exports.user__update = (req, res) => {
     //name, email, password
@@ -64,11 +83,19 @@ exports.user__delete = (req, res) => {
 }
 
 exports.user__getKey = (req, res) => {
-    User.find({email: req.body.email, password: req.body.password}, (err, result) => {
-        if(err) res.send(err);
-        res.json(result);
+    User.find({email: req.body.email}, (err, user) => {
+        if(err || !req.body.password) res.send(err);
+        if(!user.length) res.send(false);
+        bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+            if(err) res.send(err);
+            if(result) res.json({name: user[0].name, key: user[0].key});
+        });
     });
 }
+
+
+    
+
 
 
 //Cart
