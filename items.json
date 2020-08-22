@@ -1,0 +1,56 @@
+[
+    {
+        "itemID": 0,
+        "name": "Basic Mask",
+        "price": 1.49,
+        "weight": 1,
+        "rating": 3,
+        "protection": 70,
+        "imgSrc": "item0.jpg"
+    },
+    {
+        "itemID": 1,
+        "name": "Grey Mask",
+        "price": 4.99,
+        "weight": 2,
+        "rating": 3.5,
+        "protection": 75,
+        "imgSrc": "item1.jpg"
+    },
+    {
+        "itemID": 2,
+        "name": "Flower Mask",
+        "price": 7.49,
+        "weight": 2,
+        "rating": 3.8,
+        "protection": 75,
+        "imgSrc": "item2.jpg"
+    },
+    {
+        "itemID": 3,
+        "name": "Polyester Mask",
+        "price": 4.99,
+        "weight": 3,
+        "rating": 4,
+        "protection": 80,
+        "imgSrc": "item3.jpg"
+    },
+    {
+        "itemID": 4,
+        "name": "Overkill Mask",
+        "price": 49.99,
+        "weight": 40,
+        "rating": 4.2,
+        "protection": 90,
+        "imgSrc": "item4.jpg"
+    },
+    {
+        "itemID": 5,
+        "name": "Plague Doctor Mask",
+        "price": 24.99,
+        "weight": 26,
+        "rating": 5,
+        "protection": 80,
+        "imgSrc": "item5.jpg"
+    }
+]

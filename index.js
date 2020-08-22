@@ -22,7 +22,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 
-
+let startup = require("./startup");
+startup.initalizeItems();
 
 //Defau;t
 app.get("/", routes.root);
@@ -48,5 +49,8 @@ app.post("/cart", routes.verifyKey, routes.cart__create);
 //Orders
 app.post("/checkout", routes.verifyKey, routes.order__create);
 app.get("/orders", routes.verifyKey, routes.order__getList);
+
+
+
 
 app.listen(3001);

@@ -69,7 +69,17 @@ createUser = (hash, req, res) => {
 
 exports.user__update = (req, res) => {
     //name, email, password
-    User.findOneAndUpdate({key: req.query.key}, req.body, (err, result) => {
+    if(req.body.password) hashString(req.body.password, updateUser, req, res);
+    else updateUser(req.body.password, req, res);
+}
+
+updateUser = (password, req, res) => {
+    let userData = {
+        name: req.body.name,
+        email: req.body.email,
+        password: password
+    }
+    User.findOneAndUpdate({key: req.query.key}, userData, (err, result) => {
         if(err) res.send(`Error: cannot find ${err.value}`);
         res.json(result);
     });
