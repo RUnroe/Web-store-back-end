@@ -33,6 +33,8 @@ app.get("/validateKey", routes.key__validate);
 
 //Items
 app.get("/items", routes.item__getList);
+app.get("/item/:id", routes.item__getDetails);
+
 
 //User
 app.post("/user", routes.user__create);

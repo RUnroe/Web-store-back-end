@@ -43,6 +43,12 @@ exports.item__getList = (req, res) => {
     });
 }
 
+exports.item__getDetails = (req, res) => {
+    Item.findOne({itemID: req.params.id}, (err, result) => {
+        if(err) res.send(err);
+        res.json(result);
+    });
+}
 
 //User
 exports.user__create = (req, res) => {
