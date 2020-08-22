@@ -83,12 +83,15 @@ exports.user__delete = (req, res) => {
 }
 
 exports.user__getKey = (req, res) => {
+    console.log(`Password: '${req.body.password}'`);
     User.find({email: req.body.email}, (err, user) => {
-        if(err || !req.body.password) res.send(err);
-        if(!user.length) res.send(false);
+        if(err || !req.body.password || !user.length) {
+            res.json(err);
+            return;
+        }
         bcrypt.compare(req.body.password, user[0].password, (err, result) => {
-            if(err) res.send(err);
-            if(result) res.json({name: user[0].name, key: user[0].key});
+            if(err) res.json(err);
+            if(result) res.json({"name": user[0].name, "key": user[0].key});
         });
     });
 }
