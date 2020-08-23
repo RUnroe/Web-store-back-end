@@ -121,7 +121,27 @@ exports.user__getKey = (req, res) => {
 exports.cart__getList = (req, res) => {
     Cart.find({userKey: req.query.key}, (err, result) => {
         if(err) res.send(err);
-        res.json(result);
+        Item.find({}, (err, itemList) => {
+            if(err) res.send(err);
+            let itemFrequency = [0,0,0,0,0,0];
+            result.forEach(item => {
+                itemFrequency[item.itemID] += 1;
+            });
+            console.log(itemFrequency);
+            let userItems = [];
+            for(let i = 0; i < itemFrequency.length; i++) {
+                if(itemFrequency[i]){
+                    userItems.push({
+                        itemID: i,
+                        name: itemList[i].name,
+                        quantity: itemFrequency[i],
+                        price: itemList[i].price
+                    });
+                }
+            }
+            console.log(userItems);
+            res.json(userItems);
+        });
     });
 }
 
