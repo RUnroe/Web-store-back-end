@@ -122,24 +122,18 @@ exports.cart__getList = (req, res) => {
     Cart.find({userKey: req.query.key}, (err, result) => {
         if(err) res.send(err);
         Item.find({}, (err, itemList) => {
-            if(err) res.send(err);
-            let itemFrequency = [0,0,0,0,0,0];
-            result.forEach(item => {
-                itemFrequency[item.itemID] += 1;
-            });
-            console.log(itemFrequency);
+            if(err) res.send(err);   
             let userItems = [];
-            for(let i = 0; i < itemFrequency.length; i++) {
-                if(itemFrequency[i]){
-                    userItems.push({
-                        itemID: i,
-                        name: itemList[i].name,
-                        quantity: itemFrequency[i],
-                        price: itemList[i].price
-                    });
-                }
+            for(let i = 0; i < result.length; i++) {
+                userItems.push({
+                    itemID: result[i].itemID,
+                    name: itemList[i].name,
+                    quantity: result[i].quantity,
+                    price: itemList[i].price
+                });
+                
             }
-            console.log(userItems);
+            console.log("Returned Items" + userItems);
             res.json(userItems);
         });
     });
@@ -147,10 +141,28 @@ exports.cart__getList = (req, res) => {
 
 exports.cart__create = (req, res) => {
     //userKey, itemID
-    let newCartItem = new Cart({userKey: req.query.key, itemID: req.body.itemID});
-    newCartItem.save((err, result) => {
+    Cart.find({userKey: req.query.key}, (err, result) => {
         if(err) res.send(err);
-        res.json(result);
+        let item = null;
+        for(let i = 0; i < result.length; i++) {
+            if(result[i].itemID == req.body.itemID) {
+                item = result[i];
+                break;
+            }
+        }
+        if(item) {
+            Cart.findOneAndUpdate({userKey: req.query.key, itemID: req.body.itemID}, {quantity: (item.quantity + 1)}, (err, result) => {
+                if(err) res.send(`Error: cannot find ${err.value}`);
+                res.json(result);
+            });
+        }
+        else{
+            let newCartItem = new Cart({userKey: req.query.key, itemID: req.body.itemID});
+            newCartItem.save((err, result) => {
+                if(err) res.send(err);
+                res.json(result);
+            });
+        }
     });
 }
 
@@ -167,7 +179,7 @@ exports.order__create = (req, res) => {
             let newOrder = new Order(item);
             newOrder.save((err, result) => {
                 if(err) res.send(err);
-                res.json(result);
+                console.log(result);
             });
         }
     });

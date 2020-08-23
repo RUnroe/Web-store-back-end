@@ -32,6 +32,10 @@ let cartSchema = new mongoose.Schema({
     itemID: {
         type: String,
         required: "Enter an itemID"
+    },
+    quantity: {
+        type: Number,
+        default: 1
     }
 });
 
