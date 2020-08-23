@@ -127,7 +127,7 @@ exports.cart__getList = (req, res) => {
 
 exports.cart__create = (req, res) => {
     //userKey, itemID
-    let newCartItem = new Cart(req.body);
+    let newCartItem = new Cart({userKey: req.query.key, itemID: req.body.itemID});
     newCartItem.save((err, result) => {
         if(err) res.send(err);
         res.json(result);
