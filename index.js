@@ -47,6 +47,7 @@ app.post("/validate", routes.user__getKey);
 //Cart
 app.get("/cart", routes.verifyKey, routes.cart__getList);
 app.post("/cart", routes.verifyKey, routes.cart__create);
+app.put("/cart", routes.verifyKey, routes.cart__update);
 
 //Orders
 app.post("/checkout", routes.verifyKey, routes.order__create);

@@ -166,7 +166,28 @@ exports.cart__create = (req, res) => {
     });
 }
 
-
+exports.cart__update = (req, res) => {
+    console.log(req.body);
+    req.body.cart.forEach(item => {
+        if(item.quantity <= 0) {
+            Cart.findOneAndDelete({userKey: req.query.key, itemID: item.itemID}, (err, result) => {
+                if(err) {
+                    res.send(`Error: cannot find ${err.value}`);
+                    return;
+                }
+            });
+        }
+        else{
+            Cart.findOneAndUpdate({userKey: req.query.key, itemID: item.itemID}, item, (err, result) => {
+                if(err) {
+                    res.send(`Error: cannot find ${err.value}`);
+                    return;
+                }
+            });
+        }
+    });
+    res.json(true);
+}
 
 //Order
 exports.order__create = (req, res) => {
