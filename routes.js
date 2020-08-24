@@ -125,12 +125,16 @@ exports.cart__getList = (req, res) => {
             if(err) res.send(err);   
             let userItems = [];
             for(let i = 0; i < result.length; i++) {
-                userItems.push({
-                    itemID: result[i].itemID,
-                    name: itemList[i].name,
-                    quantity: result[i].quantity,
-                    price: itemList[i].price
-                });
+                for(let j = 0; j < itemList.length; j++) {
+                    if(result[i].itemID == itemList[j].itemID) {
+                        userItems.push({
+                            itemID: result[i].itemID,
+                            name: itemList[j].name,
+                            quantity: result[i].quantity,
+                            price: itemList[j].price
+                        });
+                    }
+                }
                 
             }
             console.log("Returned Items" + userItems);
@@ -195,21 +199,44 @@ exports.order__create = (req, res) => {
     Cart.find({userKey: req.query.key}, (err, result) => {
         if(err) res.send(err);
         console.log(result);
-        for(let item in result) {
+        result.forEach(item => {
             console.log(item);
-            let newOrder = new Order(item);
-            newOrder.save((err, result) => {
-                if(err) res.send(err);
-                console.log(result);
-            });
-        }
+            if(item.itemID && item.quantity) {
+                let newOrder = new Order({"userKey": item.userKey, "itemID": item.itemID, "quantity": item.quantity});
+                newOrder.save((err, result) => {
+                    if(err) res.send(err);
+                    console.log(result);
+                });
+                Cart.findOneAndDelete({_id: item._id, userKey: req.query.key}, (err, result) => {
+                    if(err) res.send(err);
+                });
+            }
+        });
+        res.json(true);
     });
     
 }
 
 exports.order__getList = (req, res) => {
-    Order.find({userKey: req.query.key}, (err, result) => {
+    Item.find({}, (err, items) => {
         if(err) res.send(err);
-        res.json(result);
+
+        Order.find({userKey: req.query.key}, (err, result) => {
+            if(err) res.send(err);
+            let retArray = [...result];
+            for(let j = 0; j < retArray.length; j++) {
+                for(let i = 0; i < items.length; i++) {
+                    if(items[i].itemID == retArray[j].itemID) {
+                        console.log(items[i].name);
+                        retArray[j].name = items[i].name;
+                        console.log(retArray[j].name);
+                        break;
+                    }
+                }
+                console.log(retArray[j]);
+            }
+            res.json(retArray);
+        }).lean();
     });
+    
 }

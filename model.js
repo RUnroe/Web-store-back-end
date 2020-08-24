@@ -85,6 +85,10 @@ let orderSchema = new mongoose.Schema({
         type: String,
         required: "Enter an itemID"
     },
+    quantity: {
+        type: Number,
+        required: "Enter a quantity"
+    },
     date: {
         type: Date,
         default: new Date()
