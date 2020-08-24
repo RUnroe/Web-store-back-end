@@ -83,8 +83,8 @@ updateUser = (password, req, res) => {
     let userData = {
         name: req.body.name,
         email: req.body.email,
-        password: password
     }
+    if(req.body.password) userData.password = password;
     User.findOneAndUpdate({key: req.query.key}, userData, (err, result) => {
         if(err) res.send(`Error: cannot find ${err.value}`);
         res.json(result);
