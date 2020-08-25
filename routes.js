@@ -29,7 +29,6 @@ exports.root = (req, res) => {
 exports.key__validate = (req, res) => {
     User.find({key: req.query.key}, (err, result) => {
         if(err) res.send(err);
-        console.log(result)
         if(result.length) res.send(true);
         else res.send(false);
     })
@@ -53,7 +52,16 @@ exports.item__getDetails = (req, res) => {
 //User
 exports.user__create = (req, res) => {
     //name, email, password
-    hashString(req.body.password, createUser, req, res);
+    User.find({email: req.body.email}, (err, user) => {
+        if(user.length || err) {
+            res.json(false);
+            return;
+        }
+        else {
+            hashString(req.body.password, createUser, req, res);
+        }
+    });
+    
     
 }
 
@@ -75,8 +83,17 @@ createUser = (hash, req, res) => {
 
 exports.user__update = (req, res) => {
     //name, email, password
-    if(req.body.password) hashString(req.body.password, updateUser, req, res);
-    else updateUser(req.body.password, req, res);
+    User.find({key: { $ne: req.query.key }, email: req.body.email}, (err, user) => {
+        if(user.length || err) {
+            res.json(false);
+            return;
+        }
+        else {
+            if(req.body.password) hashString(req.body.password, updateUser, req, res);
+            else updateUser(req.body.password, req, res);
+        }
+    });
+    
 }
 
 updateUser = (password, req, res) => {
@@ -87,7 +104,7 @@ updateUser = (password, req, res) => {
     if(req.body.password) userData.password = password;
     User.findOneAndUpdate({key: req.query.key}, userData, (err, result) => {
         if(err) res.send(`Error: cannot find ${err.value}`);
-        res.json(result);
+        res.json({"name": req.body.name, "email": req.body.email});
     });
 }
 
@@ -99,7 +116,6 @@ exports.user__delete = (req, res) => {
 }
 
 exports.user__getKey = (req, res) => {
-    console.log(`Password: '${req.body.password}'`);
     User.find({email: req.body.email}, (err, user) => {
         if(err || !req.body.password || !user.length) {
             res.json(err);
@@ -137,7 +153,6 @@ exports.cart__getList = (req, res) => {
                 }
                 
             }
-            console.log("Returned Items" + userItems);
             res.json(userItems);
         });
     });
@@ -171,7 +186,6 @@ exports.cart__create = (req, res) => {
 }
 
 exports.cart__update = (req, res) => {
-    console.log(req.body);
     req.body.cart.forEach(item => {
         if(item.quantity <= 0) {
             Cart.findOneAndDelete({userKey: req.query.key, itemID: item.itemID}, (err, result) => {
@@ -198,14 +212,11 @@ exports.order__create = (req, res) => {
     //remove all items from cart list and put in order list
     Cart.find({userKey: req.query.key}, (err, result) => {
         if(err) res.send(err);
-        console.log(result);
         result.forEach(item => {
-            console.log(item);
             if(item.itemID && item.quantity) {
                 let newOrder = new Order({"userKey": item.userKey, "itemID": item.itemID, "quantity": item.quantity});
                 newOrder.save((err, result) => {
                     if(err) res.send(err);
-                    console.log(result);
                 });
                 Cart.findOneAndDelete({_id: item._id, userKey: req.query.key}, (err, result) => {
                     if(err) res.send(err);
@@ -227,13 +238,10 @@ exports.order__getList = (req, res) => {
             for(let j = 0; j < retArray.length; j++) {
                 for(let i = 0; i < items.length; i++) {
                     if(items[i].itemID == retArray[j].itemID) {
-                        console.log(items[i].name);
                         retArray[j].name = items[i].name;
-                        console.log(retArray[j].name);
                         break;
                     }
                 }
-                console.log(retArray[j]);
             }
             res.json(retArray);
         }).lean();
